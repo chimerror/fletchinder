@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace fletchinder
+namespace Fletchinder.CLI
 {
-    class Program
+    public class Program
     {
         static void Main(string[] args)
         {
