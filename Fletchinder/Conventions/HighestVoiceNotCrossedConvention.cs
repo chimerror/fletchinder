@@ -23,7 +23,7 @@ namespace Fletchinder.Conventions
                     highestVoiceNoteNumber = candidateNoteNumber;
                 }
             }
-            for (int currentVoiceIndex = 1; currentVoiceIndex < voices.Count; currentVoiceIndex++)
+            for (int currentVoiceIndex = 0; currentVoiceIndex < voices.Count; currentVoiceIndex++)
             {
                 if (currentVoiceIndex == highestVoiceIndex)
                 {
@@ -32,6 +32,7 @@ namespace Fletchinder.Conventions
                 var times = notes[highestVoiceIndex]
                     .Union(notes[currentVoiceIndex])
                     .Select(n => n.TimeAs<T>(tempoMap))
+                    .Distinct()
                     .ToList();
                 foreach (var time in times)
                 {
