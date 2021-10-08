@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fletchinder", "Fletchinder\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fletchinder.Console", "Fletchinder.CLI\Fletchinder.CLI.csproj", "{72420235-6802-4FD4-A47E-23A99383CB11}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fletchinder.Tests", "Fletchinder.Tests\Fletchinder.Tests.csproj", "{7853BE4A-0FC4-4B85-8E83-E1F7530E175D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,5 +46,17 @@ Global
 		{72420235-6802-4FD4-A47E-23A99383CB11}.Release|x64.Build.0 = Release|Any CPU
 		{72420235-6802-4FD4-A47E-23A99383CB11}.Release|x86.ActiveCfg = Release|Any CPU
 		{72420235-6802-4FD4-A47E-23A99383CB11}.Release|x86.Build.0 = Release|Any CPU
+		{7853BE4A-0FC4-4B85-8E83-E1F7530E175D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7853BE4A-0FC4-4B85-8E83-E1F7530E175D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7853BE4A-0FC4-4B85-8E83-E1F7530E175D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{7853BE4A-0FC4-4B85-8E83-E1F7530E175D}.Debug|x64.Build.0 = Debug|Any CPU
+		{7853BE4A-0FC4-4B85-8E83-E1F7530E175D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7853BE4A-0FC4-4B85-8E83-E1F7530E175D}.Debug|x86.Build.0 = Debug|Any CPU
+		{7853BE4A-0FC4-4B85-8E83-E1F7530E175D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7853BE4A-0FC4-4B85-8E83-E1F7530E175D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7853BE4A-0FC4-4B85-8E83-E1F7530E175D}.Release|x64.ActiveCfg = Release|Any CPU
+		{7853BE4A-0FC4-4B85-8E83-E1F7530E175D}.Release|x64.Build.0 = Release|Any CPU
+		{7853BE4A-0FC4-4B85-8E83-E1F7530E175D}.Release|x86.ActiveCfg = Release|Any CPU
+		{7853BE4A-0FC4-4B85-8E83-E1F7530E175D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
