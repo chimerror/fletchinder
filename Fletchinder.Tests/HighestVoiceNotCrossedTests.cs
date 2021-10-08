@@ -1,6 +1,5 @@
 using System.Linq;
 using Fletchinder.Conventions;
-using FluentAssertions;
 using Melanchall.DryWetMidi.Composing;
 using Melanchall.DryWetMidi.Interaction;
 using MT = Melanchall.DryWetMidi.MusicTheory;
@@ -8,7 +7,7 @@ using NUnit.Framework;
 
 namespace Fletchinder.Tests
 {
-    public class HighestVoiceNotCrossedTests
+    public class HighestVoiceNotCrossedTests : BaseConventionTest
     {
         [SetUp]
         public void Setup()
@@ -39,19 +38,17 @@ namespace Fletchinder.Tests
                 .Select(p => p.ToTrackChunk(TempoMap.Default))
                 .ToList();
             var convention = new HighestVoiceNotCrossedConvention();
-            var violations = convention
-                .MeetsConvention<BarBeatTicksTimeSpan>(voices, TempoMap.Default)
-                .ToList();
-
-            violations.Count.Should().Be(1, "there should be only one violation");
-            var violation = violations[0] as HighestVoiceNotCrossedConvention.Violation<BarBeatTicksTimeSpan>;
-            violation.Should().NotBeNull("it should be castable to the right violation");
-            violation.Convention.Should().BeSameAs(convention, "the original convention should be returned");
-            violation.HighVoiceIndex.Should().Be(0, "the highest voice should be determined correctly");
-            violation.ViolatingVoiceIndex.Should().Be(1, "the violating voice should be determined correctly");
-            violation.TimeSpan.Should().Be(
-                BarBeatTicksTimeSpan.Parse("1.0.0"),
-                "the violation should be marked at the right time");
+            var expectedViolations = new HighestVoiceNotCrossedConvention.Violation<BarBeatTicksTimeSpan>[]
+            {
+                new HighestVoiceNotCrossedConvention.Violation<BarBeatTicksTimeSpan>()
+                {
+                    Convention = convention,
+                    HighVoiceIndex = 0,
+                    ViolatingVoiceIndex = 1,
+                    TimeSpan = BarBeatTicksTimeSpan.Parse("1.0.0")
+                }
+            };
+            VerifyConvention<BarBeatTicksTimeSpan>(convention, voices, expectedViolations);
         }
     }
 }

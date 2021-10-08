@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Melanchall.DryWetMidi.Core;
@@ -56,12 +57,74 @@ namespace Fletchinder.Conventions
             }
         }
 
-        public class Violation<T> : IViolation<T> where T : ITimeSpan
+        public class Violation<T> :
+            BaseViolation<T>,
+            IComparable<HighestVoiceNotCrossedConvention.Violation<T>>,
+            IEquatable<HighestVoiceNotCrossedConvention.Violation<T>> where T : ITimeSpan
         {
-            public T TimeSpan { get; set; }
-            public IConvention Convention { get; set; }
             public int HighVoiceIndex { get; set; }
             public int ViolatingVoiceIndex { get; set; }
+
+            public int CompareTo(HighestVoiceNotCrossedConvention.Violation<T> other)
+            {
+                var baseComparison = base.CompareTo(other);
+                var otherViolation = other as HighestVoiceNotCrossedConvention.Violation<T>;
+                if (baseComparison != 0 || otherViolation == null)
+                {
+                    return baseComparison;
+                }
+
+                var highVoiceComparison = this.HighVoiceIndex.CompareTo(otherViolation.HighVoiceIndex);
+                if (highVoiceComparison != 0)
+                {
+                    return highVoiceComparison;
+                }
+
+                return this.ViolatingVoiceIndex.CompareTo(otherViolation.ViolatingVoiceIndex);
+            }
+
+            public bool Equals(HighestVoiceNotCrossedConvention.Violation<T> other)
+            {
+                var baseEquality = base.Equals(other);
+                if (!baseEquality)
+                {
+                    return baseEquality;
+                }
+
+                var otherViolation = other as HighestVoiceNotCrossedConvention.Violation<T>;
+                if (otherViolation == null)
+                {
+                    return false;
+                }
+                else
+                {
+                    return this.HighVoiceIndex.Equals(other.HighVoiceIndex) &&
+                        this.ViolatingVoiceIndex.Equals(other.ViolatingVoiceIndex);
+                }
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (obj == null)
+                {
+                    return false;
+                }
+
+                var otherViolation = obj as HighestVoiceNotCrossedConvention.Violation<T>;
+                if (otherViolation == null)
+                {
+                    return false;
+                }
+                else
+                {
+                    return Equals(otherViolation);
+                }
+            }
+
+            public override int GetHashCode()
+            {
+                return base.GetHashCode() ^ HighVoiceIndex ^ ViolatingVoiceIndex;
+            }
         }
     }
 }
