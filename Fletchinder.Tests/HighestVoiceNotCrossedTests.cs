@@ -1,9 +1,10 @@
-using System.Linq;
+using System.Collections.Generic;
 using Fletchinder.Conventions;
-using Melanchall.DryWetMidi.Composing;
+using Melanchall.DryWetMidi.Core;
 using Melanchall.DryWetMidi.Interaction;
 using MT = Melanchall.DryWetMidi.MusicTheory;
 using NUnit.Framework;
+
 
 namespace Fletchinder.Tests
 {
@@ -14,41 +15,126 @@ namespace Fletchinder.Tests
         {
         }
 
-        [Test]
-        public void ViolationsCaught()
+        [TestCaseSource(nameof(HighestVoiceTestCases))]
+        public void ViolationsCaught(
+            HighestVoiceNotCrossedConvention convention,
+            TrackChunk[] voices,
+            IEnumerable<HighestVoiceNotCrossedConvention.Violation<BarBeatTicksTimeSpan>> expectedViolations)
         {
-            var highVoice = new PatternBuilder()
-                .SetNoteLength(MusicalTimeSpan.Quarter)
-                .Note(MT.Note.Get(MT.NoteName.C, 5))
-                .Repeat(7)
-                .Build();
-            var lowVoice = new PatternBuilder()
-                .SetNoteLength(MusicalTimeSpan.Quarter)
-                .SetRootNote(MT.Note.Get(MT.NoteName.A, 4))
-                .Note(MT.Interval.Zero) // A
-                .Note(MT.Interval.One) // A#
-                .Note(MT.Interval.Two) // B
-                .Note(MT.Interval.Three) // C
-                .Note(MT.Interval.Four) // C# <- Violation!
-                .Note(MT.Interval.Three) // C
-                .Note(MT.Interval.Two) // B
-                .Note(MT.Interval.One) // A
-                .Build();
-            var voices = new [] { highVoice, lowVoice }
-                .Select(p => p.ToTrackChunk(TempoMap.Default))
-                .ToList();
+            VerifyConvention<BarBeatTicksTimeSpan>(convention, voices, expectedViolations);
+        }
+
+        private static IEnumerable<object> HighestVoiceTestCases()
+        {
             var convention = new HighestVoiceNotCrossedConvention();
-            var expectedViolations = new HighestVoiceNotCrossedConvention.Violation<BarBeatTicksTimeSpan>[]
+            yield return new object[]
             {
-                new HighestVoiceNotCrossedConvention.Violation<BarBeatTicksTimeSpan>()
+                convention,
+                new TrackChunk[]
                 {
-                    Convention = convention,
-                    HighVoiceIndex = 0,
-                    ViolatingVoiceIndex = 1,
-                    TimeSpan = BarBeatTicksTimeSpan.Parse("1.0.0")
+                    TestVoices.SteadyEightNotes(MT.Note.Get(MT.NoteName.C, 5)),
+                    TestVoices.RiseThenFallByHalfStepEightNotes(MT.Note.Get(MT.NoteName.A, 4))
+                },
+                new HighestVoiceNotCrossedConvention.Violation<BarBeatTicksTimeSpan>[]
+                {
+                    new HighestVoiceNotCrossedConvention.Violation<BarBeatTicksTimeSpan>()
+                    {
+                        Convention = convention,
+                        HighVoiceIndex = 0,
+                        ViolatingVoiceIndex = 1,
+                        TimeSpan = BarBeatTicksTimeSpan.Parse("1.0.0")
+                    }
                 }
             };
-            VerifyConvention<BarBeatTicksTimeSpan>(convention, voices, expectedViolations);
+            yield return new object[]
+            {
+                convention,
+                new TrackChunk[] {
+                    TestVoices.RiseThenFallByHalfStepEightNotes(MT.Note.Get(MT.NoteName.A, 4)),
+                    TestVoices.SteadyEightNotes(MT.Note.Get(MT.NoteName.C, 5))
+                },
+                new HighestVoiceNotCrossedConvention.Violation<BarBeatTicksTimeSpan>[]
+                {
+                    new HighestVoiceNotCrossedConvention.Violation<BarBeatTicksTimeSpan>()
+                    {
+                        Convention = convention,
+                        HighVoiceIndex = 1,
+                        ViolatingVoiceIndex = 0,
+                        TimeSpan = BarBeatTicksTimeSpan.Parse("1.0.0")
+                    }
+                }
+            };
+            yield return new object[]
+            {
+                convention,
+                new TrackChunk[]
+                {
+                    TestVoices.RiseThenFallByHalfStepEightNotes(MT.Note.Get(MT.NoteName.A, 4)),
+                    TestVoices.SteadyEightNotes(MT.Note.Get(MT.NoteName.C, 5)),
+                    TestVoices.RiseThenFallByHalfStepEightNotes(MT.Note.Get(MT.NoteName.A, 4))
+                },
+                new HighestVoiceNotCrossedConvention.Violation<BarBeatTicksTimeSpan>[]
+                {
+                    new HighestVoiceNotCrossedConvention.Violation<BarBeatTicksTimeSpan>()
+                    {
+                        Convention = convention,
+                        HighVoiceIndex = 1,
+                        ViolatingVoiceIndex = 0,
+                        TimeSpan = BarBeatTicksTimeSpan.Parse("1.0.0")
+                    },
+                    new HighestVoiceNotCrossedConvention.Violation<BarBeatTicksTimeSpan>()
+                    {
+                        Convention = convention,
+                        HighVoiceIndex = 1,
+                        ViolatingVoiceIndex = 2,
+                        TimeSpan = BarBeatTicksTimeSpan.Parse("1.0.0")
+                    }
+                }
+            };
+            yield return new object[]
+            {
+                convention,
+                new TrackChunk[]
+                {
+                    TestVoices.SteadyEightNotes(MT.Note.Get(MT.NoteName.C, 5)),
+                    TestVoices.SteadyEightNotes(MT.Note.Get(MT.NoteName.C, 4)),
+                },
+                new HighestVoiceNotCrossedConvention.Violation<BarBeatTicksTimeSpan>[]
+                {
+                }
+            };
+            yield return new object[]
+            {
+                convention,
+                new TrackChunk[]
+                {
+                    TestVoices.SteadyEightNotes(MT.Note.Get(MT.NoteName.C, 5)),
+                    TestVoices.RiseThenFallByHalfStepEightNotes(MT.Note.Get(MT.NoteName.GSharp, 4)),
+                },
+                new HighestVoiceNotCrossedConvention.Violation<BarBeatTicksTimeSpan>[]
+                {
+                }
+            };
+            yield return new object[]
+            {
+                convention,
+                new TrackChunk[]
+                {
+                    TestVoices.RiseThenFallByHalfStepEightNotes(MT.Note.Get(MT.NoteName.A, 4)),
+                    TestVoices.SteadyEightNotes(MT.Note.Get(MT.NoteName.C, 5)),
+                    TestVoices.SteadyEightNotes(MT.Note.Get(MT.NoteName.C, 4)),
+                },
+                new HighestVoiceNotCrossedConvention.Violation<BarBeatTicksTimeSpan>[]
+                {
+                    new HighestVoiceNotCrossedConvention.Violation<BarBeatTicksTimeSpan>()
+                    {
+                        Convention = convention,
+                        HighVoiceIndex = 1,
+                        ViolatingVoiceIndex = 0,
+                        TimeSpan = BarBeatTicksTimeSpan.Parse("1.0.0")
+                    }
+                }
+            };
         }
     }
 }
