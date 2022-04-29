@@ -22,6 +22,21 @@ namespace Fletchinder.Tests
                 .ToTrackChunk(TempoMap.Default);
         }
 
+        public static TrackChunk SteadyFourNotes(MT.Note startingNote = null)
+        {
+            if (startingNote == null)
+            {
+                startingNote = MT.Note.Get(MT.NoteName.C, 4);
+            }
+
+            return new PatternBuilder()
+                .SetNoteLength(MusicalTimeSpan.Half)
+                .Note(startingNote)
+                .Repeat(3)
+                .Build()
+                .ToTrackChunk(TempoMap.Default);
+        }
+
         public static TrackChunk RiseThenFallByHalfStepEightNotes(MT.Note startingNote = null)
         {
             if (startingNote == null)

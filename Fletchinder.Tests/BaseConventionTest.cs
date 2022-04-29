@@ -11,13 +11,20 @@ namespace Fletchinder.Tests
         protected void VerifyConvention<T>(
             IConvention convention,
             IList<TrackChunk> voices,
-            IEnumerable<IViolation<T>> expectedViolations) where T : ITimeSpan
+            IEnumerable<IViolation<T>> expectedViolations,
+            string extraBecauseContext = "") where T : ITimeSpan
         {
             var actualViolations = convention
                 .MeetsConvention<T>(voices, TempoMap.Default);
+            if (!string.IsNullOrWhiteSpace(extraBecauseContext) && !extraBecauseContext.StartsWith(' '))
+            {
+                extraBecauseContext = $" {extraBecauseContext}";
+            }
             expectedViolations
                 .Should()
-                .BeEquivalentTo(actualViolations, "expected violations should match actual violations");
+                .BeEquivalentTo(
+                    actualViolations,
+                    $"expected violations should match actual violations{extraBecauseContext}");
         }
     }
 }

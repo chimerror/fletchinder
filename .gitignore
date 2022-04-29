@@ -4,3 +4,7 @@
 obj/
 
 bin/
+
+coveragereport/
+
+Fletchinder.Tests/TestResults/
